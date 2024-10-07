@@ -71,6 +71,5 @@ int main(void) {
     //printTheBinaryNumber(secondNumber + firstNumber);
     //printf("Двоичная сумма:\n");
 
-
     return errorCode;
 }
