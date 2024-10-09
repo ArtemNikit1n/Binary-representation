@@ -5,6 +5,38 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+void binarySum(bool binaryFirstNumber[], bool binarySecondNumber[], bool binarySumArray[]) {
+    bool theAdditionalTerm = 0;
+    for (int i = 31; i >= 0; --i) {
+        bool oneAndZero = (binaryFirstNumber[i] && !binarySecondNumber[i]) || (!binaryFirstNumber[i] && binarySecondNumber[i]);
+        if (!binaryFirstNumber[i] && !binarySecondNumber[i]) {
+            if (theAdditionalTerm) {
+                theAdditionalTerm = 0;
+                binarySumArray[i] = 1;
+            } else {
+                binarySumArray[i] = 0;
+            }
+        }
+        if (binaryFirstNumber[i] && binarySecondNumber[i]) {
+            if (theAdditionalTerm) {
+                theAdditionalTerm = 1;
+                binarySumArray[i] = 1;
+            } else {
+                theAdditionalTerm = 1;
+                binarySumArray[i] = 0;
+            }
+        }
+        if (oneAndZero) {
+            if (theAdditionalTerm) {
+                theAdditionalTerm = 1;
+                binarySumArray[i] = 0;
+            } else {
+                binarySumArray[i] = 1;
+            }
+        }
+    }
+}
+
 void printBoolArray(bool boolArray[], int boolArrayLength) {
     for (int i = 0; i < boolArrayLength; ++i) {
         printf("%d", boolArray[i]);
@@ -52,6 +84,7 @@ int main(void) {
     int secondNumber = -1;
     bool binaryFirstNumber[32] = { 0 };
     bool binarySecondNumber[32] = { 0 };
+    bool binarySumArray[32] = { 0 };
 
     bool errorCode = 0;
 
@@ -61,15 +94,14 @@ int main(void) {
 
     getBinaryNumber(firstNumber, binaryFirstNumber);
     getBinaryNumber(secondNumber, binarySecondNumber);
+    binarySum(binaryFirstNumber, binarySecondNumber, binarySumArray);
 
     printf("Двоичное представление первого числа в дополнительном коде:\n");
     printBoolArray(binaryFirstNumber, 32);
     printf("\nДвоичное представление второго числа в дополнительном коде:\n");
     printBoolArray(binarySecondNumber, 32);
-
-    //printf("Двоичная сумма в дополнительном коде:\n");
-    //printTheBinaryNumber(secondNumber + firstNumber);
-    //printf("Двоичная сумма:\n");
+    printf("\nДвоичная сумма в дополнительном коде:\n");
+    printBoolArray(binarySumArray, 32);
 
     return errorCode;
 }
