@@ -103,12 +103,11 @@ void getBinaryNumber(int decimalNumber, bool binaryNumber[]) {
     }
 }
 
-bool userInput(int *firstNumber, int *secondNumber) {
+void userInput(int *firstNumber, int *secondNumber, bool *errorCode) {
     char strFirstNumber[100];
     char strSecondNumber[100];
     char* endptrFirstNumber = NULL;
     char* endptrSecondNumber = NULL;
-    bool errorCode = false;
     errno = 0;
 
     setlocale(LC_ALL, "Rus");
@@ -123,17 +122,30 @@ bool userInput(int *firstNumber, int *secondNumber) {
 
     if (errno == ERANGE) {
         printf("Ошибка ввода");
-        errorCode = true;
-        return errorCode;
+        *errorCode = true;
     }
 
     if (*endptrFirstNumber != '\0' || *endptrSecondNumber != '\0') {
         printf("Ошибка ввода");
-        errorCode = true;
-        return errorCode;
+        *errorCode = true;
     }
+}
 
-    return errorCode;
+void checkingTheAmountForStackOverflow(int firstNumber, int secondNumber, bool *errorCode) {
+    if (firstNumber < 0 && secondNumber < 0 && abs(firstNumber) > INT_MAX + (secondNumber + 1)) {
+        printf("Переполнение стека");
+        *errorCode = true;
+    }
+    if (firstNumber > 0 && secondNumber > 0 && firstNumber > INT_MAX - secondNumber) {
+        printf("Переполнение стека");
+        *errorCode = true;
+    }
+}
+
+bool testExponentiationLogTime() {
+    bool test1ExponentiationLogTime = exponentiationLogTime(5, 2) == 25;
+    bool test2ExponentiationLogTime = exponentiationLogTime(2, 20) == 1048576;
+    return test1ExponentiationLogTime && test2ExponentiationLogTime;
 }
 
 bool testGetBinaryNumber() {
@@ -150,6 +162,10 @@ bool testGetBinaryNumber() {
 
     return comparingTwoArrays(positiveNumberArray, theResultIsForThePositive, 32) && comparingTwoArrays(negativeNumberArray, theResultIsForTheNegative, 32);
 }
+
+bool testBinarySum();
+
+bool testConversionToDecimal();
 
 int main(void) {
     int firstNumber = -1;
@@ -169,15 +185,20 @@ int main(void) {
         return errorCode;
     }
 
-    errorCode = userInput(&firstNumber, &secondNumber);
+    if (!testExponentiationLogTime()) {
+        printf("Тест exponentiationLogTime не пройден");
+        errorCode = true;
+        return errorCode;
+    }
+
+    userInput(&firstNumber, &secondNumber, &errorCode);
     if (errorCode) {
         return errorCode;
     }
-    //if ((firstNumber > INT_MAX - secondNumber) || (firstNumber + secondNumber < INT_MIN)) {
-    //    printf("Переполнение стека");
-    //    errorCode = true;
-    //    return errorCode;
-    //}
+    checkingTheAmountForStackOverflow(firstNumber, secondNumber, &errorCode);
+    if (errorCode) {
+        return errorCode;
+    }
 
     getBinaryNumber(firstNumber, binaryFirstNumber);
     getBinaryNumber(secondNumber, binarySecondNumber);
@@ -191,8 +212,6 @@ int main(void) {
     printBoolArray(binarySumArray, 32);
     decimalSumNumber = conversionToDecimal(binarySumArray);
     printf("\nДесятичная сумма:\n%d", decimalSumNumber);
-
-
 
     return errorCode;
 }
