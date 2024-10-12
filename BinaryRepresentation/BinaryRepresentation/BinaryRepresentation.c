@@ -6,13 +6,15 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-bool comparingTwoArrays(bool firstArray[], bool secondArray[], bool arrayLength) {
+bool comparingTwoArrays(bool firstArray[], bool secondArray[], int arrayLength) {
+    bool errorCode = true;
     for (int i = 0; i < arrayLength; ++i) {
         if (firstArray[i] != secondArray[i]) {
-            return false;
+            errorCode = false;
+            break;
         }
     }
-    return true;
+    return errorCode;
 }
 
 void printBoolArray(bool boolArray[], int boolArrayLength) {
@@ -142,6 +144,13 @@ void checkingTheAmountForStackOverflow(int firstNumber, int secondNumber, bool *
     }
 }
 
+bool testComparingTwoArrays() {
+    bool firstArray[6] = { 1, 0, 0, 1, 0, 1 };
+    bool secondArray[6] = { 0, 1, 1, 1, 0, 0 };
+
+    return !comparingTwoArrays(firstArray, secondArray, 6) && comparingTwoArrays(firstArray, firstArray, 6);
+}
+
 bool testExponentiationLogTime() {
     bool test1ExponentiationLogTime = exponentiationLogTime(5, 2) == 25;
     bool test2ExponentiationLogTime = exponentiationLogTime(2, 20) == 1048576;
@@ -153,7 +162,10 @@ bool testGetBinaryNumber() {
     int negativeNumber = -1025;
     bool positiveNumberArray[32] = { 0 };
     positiveNumberArray[20] = 1;
-    bool negativeNumberArray[32] = { 1 };
+    bool negativeNumberArray[32] = { 0 };
+    for (int i = 0; i < 32; i++) {
+        negativeNumberArray[i] = 1;
+    }
     negativeNumberArray[21] = 0;
     bool theResultIsForThePositive[32] = { 0 };
     bool theResultIsForTheNegative[32] = { 0 };
@@ -163,9 +175,35 @@ bool testGetBinaryNumber() {
     return comparingTwoArrays(positiveNumberArray, theResultIsForThePositive, 32) && comparingTwoArrays(negativeNumberArray, theResultIsForTheNegative, 32);
 }
 
-bool testBinarySum();
+bool testBinarySum() {
+    bool theFirstSummand[32] = { 0 };
+    for (int i = 1; i < 32; i++) {
+        theFirstSummand[i] = 1;
+    }
+    bool theSecondSummand[32] = { 0 };
+    for (int i = 0; i < 32; i++) {
+        theSecondSummand[i] = 1;
+    }
+    bool expectedResult[32] = { 0 };
+    for (int i = 1; i < 31; i++) {
+        expectedResult[i] = 1;
+    }
 
-bool testConversionToDecimal();
+    bool result[32] = { 0 };
+    binarySum(theFirstSummand, theSecondSummand, result);
+    return comparingTwoArrays(result, expectedResult, 32);
+}
+
+bool testConversionToDecimal() {
+    bool positiveNumberArray[32] = { 0 };
+    positiveNumberArray[20] = 1;
+    bool negativeNumberArray[32] = { 0 };
+    for (int i = 0; i < 32; i++) {
+        negativeNumberArray[i] = 1;
+    }
+    negativeNumberArray[21] = 0;
+    return conversionToDecimal(positiveNumberArray) == 2048 && conversionToDecimal(negativeNumberArray) == -1025;
+}
 
 int main(void) {
     int firstNumber = -1;
@@ -179,14 +217,32 @@ int main(void) {
 
     setlocale(LC_ALL, "Rus");
 
-    if (!testGetBinaryNumber()) {
-        printf("Тест getBinaryNumber не пройден");
+    if (!testComparingTwoArrays()) {
+        printf("Тест comparingTwoArrays не пройден\n");
         errorCode = true;
         return errorCode;
     }
 
     if (!testExponentiationLogTime()) {
-        printf("Тест exponentiationLogTime не пройден");
+        printf("Тест exponentiationLogTime не пройден\n");
+        errorCode = true;
+        return errorCode;
+    }
+
+    if (!testGetBinaryNumber()) {
+        printf("Тест getBinaryNumber не пройден\n");
+        errorCode = true;
+        return errorCode;
+    }
+
+    if (!testBinarySum()) {
+        printf("Тест binarySum не пройден\n");
+        errorCode = true;
+        return errorCode;
+    }
+
+    if (!testConversionToDecimal()) {
+        printf("Тест conversionToDecimal не пройден\n");
         errorCode = true;
         return errorCode;
     }
